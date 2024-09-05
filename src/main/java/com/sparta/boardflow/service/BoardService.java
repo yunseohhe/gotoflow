@@ -7,7 +7,10 @@ import com.sparta.boardflow.dto.board.reponse.BoardUpdateResponseDto;
 import com.sparta.boardflow.dto.board.request.BoardSaveRequestDto;
 import com.sparta.boardflow.dto.board.request.BoardUpdateRequestDto;
 import com.sparta.boardflow.entity.Board;
+import com.sparta.boardflow.entity.User;
+import com.sparta.boardflow.dto.user.UserDto;
 import com.sparta.boardflow.repository.BoardRepository;
+import com.sparta.boardflow.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,22 +24,24 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public BoardSaveResponseDto saveBoards(BoardSaveRequestDto boardSaveRequestDto) {
-        Board newBoard = new Board(
-                boardSaveRequestDto.getTitle(),
-                boardSaveRequestDto.getContents()
-        );
+    public BoardSaveResponseDto saveBoards(Long userId, BoardSaveRequestDto boardSaveRequestDto) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("해당 유저가 없습니다."));
+
+        Board newBoard = new Board(boardSaveRequestDto.getTitle(), boardSaveRequestDto.getDetail(), user);
         Board savedBoard = boardRepository.save(newBoard);
 
-        return new BoardSaveResponseDto(savedBoard.getId(), savedBoard.getTitle(), savedBoard.getContents());
+        return new BoardSaveResponseDto(savedBoard.getId(), savedBoard.getTitle(), savedBoard.getDetail(), new UserDto((user.getId()), user.getName()));
     }
 
     public BoardDetailResponseDto getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new NullPointerException("해당하는 board가 없습니다."));
 
-        return new BoardDetailResponseDto(board.getId(), board.getTitle(), board.getContents());
+        User user = board.getUser();
+
+        return new BoardDetailResponseDto(board.getId(), board.getDetail(), new UserDto(user.getId(), user.getName()));
     }
 
     public List<BoardSimpleResponseDto> getBoards() {

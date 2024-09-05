@@ -6,5 +6,5 @@ import lombok.Getter;
 public class BoardSaveRequestDto {
 
     private String title;
-    private String contents;
+    private String detail;
 }

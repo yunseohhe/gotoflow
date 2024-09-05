@@ -5,5 +5,7 @@ import lombok.Getter;
 @Getter
 public class CommentSaveRequestDto {
 
+    private Long boardId;
     private String contents;
+
 }

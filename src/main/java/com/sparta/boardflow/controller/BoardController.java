@@ -1,7 +1,8 @@
 package com.sparta.boardflow.controller;
 
-import com.sparta.boardflow.dto.board.reponse.BoardSaveResponseDto;
+import com.sparta.boardflow.dto.AuthUser;
 import com.sparta.boardflow.dto.board.reponse.BoardDetailResponseDto;
+import com.sparta.boardflow.dto.board.reponse.BoardSaveResponseDto;
 import com.sparta.boardflow.dto.board.reponse.BoardSimpleResponseDto;
 import com.sparta.boardflow.dto.board.reponse.BoardUpdateResponseDto;
 import com.sparta.boardflow.dto.board.request.BoardSaveRequestDto;
@@ -19,10 +20,12 @@ public class BoardController {
 
     private final BoardService boardService;
 
+
     // 추가
     @PostMapping("/boards")
-    public ResponseEntity<BoardSaveResponseDto> saveBoards(@RequestBody BoardSaveRequestDto boardSaveRequestDto) {
-        return ResponseEntity.ok(boardService.saveBoards(boardSaveRequestDto));
+    public ResponseEntity<BoardSaveResponseDto> saveBoards(AuthUser authUser, @RequestBody BoardSaveRequestDto boardSaveRequestDto) {
+        Long userId = authUser.getId();
+        return ResponseEntity.ok(boardService.saveBoards(userId, boardSaveRequestDto));
     }
 
     // 단건 조회
